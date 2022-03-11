@@ -12,9 +12,15 @@ use function is_array;
 
 class Xml
 {
+    /**
+     * @param array<mixed> $array
+     */
     public static function arrayToXml(DOMDocument $xml, DOMNode $domNode, array $array = []): DOMDocument
     {
         foreach ($array as $el => $val) {
+            /**
+             * @var string|array< $val
+             */
             if (is_array($val)) {
                 self::arrayToXml($xml, $domNode->$el, $val);
             } else {
@@ -24,7 +30,10 @@ class Xml
         return $xml;
     }
 
-    public static function toXml(DOMDocument|DOMElement|XmlBuilder|string|null $xml): DOMDocument
+    /**
+     * @param array<DOMNode|XmlBuilder|array<mixed>|string|null> $xml
+     */
+    public static function toXml(DOMNode|XmlBuilder|array|string|null $xml): DOMDocument
     {
         if ($xml instanceof XmlBuilder) {
             return $xml->getDom();

@@ -14,8 +14,11 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 
 class XmlStructure
 {
-    protected DOMDocument|DOMNode $xml;
+    protected DOMDocument $xml;
 
+    /**
+     * @param array<DOMNode|XmlBuilder|array<mixed>|string|null> $xml
+     */
     public function __construct($xml)
     {
         $this->xml = SoapXmlUtil::toXml($xml);
@@ -36,37 +39,54 @@ class XmlStructure
         $domXpath = new DOMXpath($this->xml);
         $selector = (new CssSelectorConverter())->toXPath($cssOrXPath);
         $els = $domXpath->query($selector);
-        if ($els) {
+        if ($els !== false && count($els) > 0) {
             return $els->item(0);
         }
         $els = $domXpath->query($cssOrXPath);
-        if ($els->length !== 0) {
+        if ($els !== false && count($els) > 0) {
             return $els->item(0);
         }
         throw new ElementNotFound($cssOrXPath);
     }
 
+    /**
+     * @param array<DOMNode|XmlBuilder|array<mixed>|string|null> $xml
+     */
     public function matchXmlStructure($xml): bool
     {
         $xml = SoapXmlUtil::toXml($xml);
         $root = $xml->firstChild;
+        if ($root === null) {
+            throw new \Exception('XML is empty');
+        }
         $els = $this->xml->getElementsByTagName($root->nodeName);
-        if (empty($els)) {
+        if (count($els) === 0) {
             throw new ElementNotFound($root->nodeName, 'Element');
         }
 
-        $matches = false;
         foreach ($els as $node) {
-            $matches |= $this->matchForNode($root, $node);
+            /**
+             * @var DOMNode $node
+             */
+            if ($this->matchForNode($root, $node)) {
+                return true;
+            }
         }
-        return $matches;
+
+        return false;
     }
 
-    protected function matchForNode($schema, $xml): bool
+    protected function matchForNode(DOMNode $schema, DOMNode $xml): bool
     {
         foreach ($schema->childNodes as $node1) {
+            /**
+             * @var DOMNode $node1
+             */
             $matched = false;
             foreach ($xml->childNodes as $node2) {
+                /**
+                 * @var DOMNode $node2
+                 */
                 if ($node1->nodeName == $node2->nodeName) {
                     $matched = $this->matchForNode($node1, $node2);
                     if ($matched) {

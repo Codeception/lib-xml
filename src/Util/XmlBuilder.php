@@ -6,6 +6,7 @@ namespace Codeception\Util;
 
 use DOMDocument;
 use DOMElement;
+use DOMNode;
 use Exception;
 
 /**
@@ -74,7 +75,7 @@ class XmlBuilder
 {
     protected DOMDocument $dom;
 
-    protected DOMElement|DOMDocument $currentNode;
+    protected DOMNode $currentNode;
 
     public function __construct()
     {
@@ -93,7 +94,7 @@ class XmlBuilder
         return $this;
     }
 
-    public function val($val): self
+    public function val(string $val): self
     {
         $this->currentNode->nodeValue = $val;
         return $this;
@@ -104,6 +105,9 @@ class XmlBuilder
      */
     public function attr(string $attr, string $val): self
     {
+        if (!$this->currentNode instanceof DOMElement) {
+            throw new Exception('Current node is not DOMElement');
+        }
         $this->currentNode->setAttribute($attr, $val);
         return $this;
     }
@@ -113,22 +117,25 @@ class XmlBuilder
      */
     public function parent(): self
     {
+        if ($this->currentNode->parentNode === null) {
+            throw new Exception('Element has no parent');
+        }
         $this->currentNode = $this->currentNode->parentNode;
         return $this;
     }
 
     /**
-     * Traverses to parent with $name
+     * Traverses to parent with $tagName
      *
      * @throws Exception
      */
-    public function parents(string $tag): self
+    public function parents(string $tagName): self
     {
         $traverseNode = $this->currentNode;
         $elFound = false;
         while ($traverseNode->parentNode) {
             $traverseNode = $traverseNode->parentNode;
-            if ($traverseNode->tagName === $tag) {
+            if ($traverseNode instanceof DOMElement && $traverseNode->tagName === $tagName) {
                 $this->currentNode = $traverseNode;
                 $elFound = true;
                 break;
@@ -136,7 +143,7 @@ class XmlBuilder
         }
 
         if (!$elFound) {
-            throw new Exception("Parent {$tag} not found in XML");
+            throw new Exception("Parent {$tagName} not found in XML");
         }
 
         return $this;
@@ -144,7 +151,12 @@ class XmlBuilder
 
     public function __toString(): string
     {
-        return $this->dom->saveXML();
+        $string = $this->dom->saveXML();
+        if ($string === false) {
+            throw new Exception('Failed to convert DOM to string');
+        }
+
+        return $string;
     }
 
     public function getDom(): DOMDocument
