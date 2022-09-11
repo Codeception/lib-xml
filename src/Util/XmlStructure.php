@@ -17,9 +17,9 @@ class XmlStructure
     protected DOMDocument $xml;
 
     /**
-     * @param array<DOMNode|XmlBuilder|array<mixed>|string|null> $xml
+     * @param DOMNode|XmlBuilder|array<mixed>|string|null $xml
      */
-    public function __construct($xml)
+    public function __construct(DOMNode|XmlBuilder|array|string|null $xml)
     {
         $this->xml = SoapXmlUtil::toXml($xml);
     }
@@ -50,9 +50,9 @@ class XmlStructure
     }
 
     /**
-     * @param array<DOMNode|XmlBuilder|array<mixed>|string|null> $xml
+     * @param DOMNode|XmlBuilder|array<mixed>|string|null $xml
      */
-    public function matchXmlStructure($xml): bool
+    public function matchXmlStructure(DOMNode|XmlBuilder|array|string|null $xml): bool
     {
         $xml = SoapXmlUtil::toXml($xml);
         $root = $xml->firstChild;

@@ -19,7 +19,7 @@ class Xml
     {
         foreach ($array as $el => $val) {
             /**
-             * @var string|array< $val
+             * @var string|array<mixed> $val
              */
             if (is_array($val)) {
                 self::arrayToXml($xml, $domNode->$el, $val);
@@ -31,7 +31,7 @@ class Xml
     }
 
     /**
-     * @param array<DOMNode|XmlBuilder|array<mixed>|string|null> $xml
+     * @param DOMNode|XmlBuilder|array<mixed>|string|null $xml
      */
     public static function toXml(DOMNode|XmlBuilder|array|string|null $xml): DOMDocument
     {
