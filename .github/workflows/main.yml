@@ -30,4 +30,4 @@ jobs:
       run: phpcs src/
 
     - name: Static analysis
-      run: phpstan analyze --level=9 src/
+      run: phpstan analyze
