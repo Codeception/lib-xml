@@ -16,7 +16,7 @@
         "php": "^8.2",
         "ext-dom": "*",
         "codeception/lib-web": "^1.0.6 || ^2",
-        "symfony/css-selector": ">=4.4.24 <8.0"
+        "symfony/css-selector": ">=4.4.24 <9.0"
     },
     "conflict": {
         "codeception/codeception": "<5.0.0-alpha3"
