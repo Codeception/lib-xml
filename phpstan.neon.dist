@@ -1,0 +1,6 @@
+parameters:
+  level: 9
+  paths:
+    - src
+  ignoreErrors:
+    - '#Method Codeception\\Util\\XmlStructure::matchElement\(\) should return DOMNode\|null but returns DOMNameSpaceNode\|DOMNode\|null\.#'
